@@ -1,0 +1,22 @@
+[package]
+name = "live_subtitle_tauri"
+version = "0.0.1"
+description = "A Tauri App"
+authors = ["rumia-san"]
+license = ""
+repository = ""
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[dependencies]
+tauri = { version = "1.5", features = [ "path-all", "fs-create-dir", "fs-exists", "fs-write-file", "fs-read-file", "http-request", "process-exit", "window-set-decorations", "shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

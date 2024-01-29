@@ -1,0 +1,96 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "live_subtitle_tauri",
+    "version": "0.0.1"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "setDecorations": true
+      },
+      "process": {
+        "exit": true
+      },
+      "http": {
+        "all": false,
+        "request": true,
+        "scope": [
+          "https://api.live.bilibili.com/*",
+          "https://api.bilibili.com/*"
+        ]
+      },
+      "fs": {
+        "all": false,
+        "exists": true,
+        "readFile": true,
+        "scope": [
+          "$APPCACHE",
+          "$APPCACHE/*",
+          "$APPCONFIG",
+          "$APPCONFIG/*"
+        ],
+        "writeFile": true,
+        "createDir": true
+      },
+      "path": {
+        "all": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "rumia-san.live-subtitle-tauri",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "label": "subtitle",
+        "fullscreen": false,
+        "resizable": true,
+        "title": "直播字幕小工具 显示窗口",
+        "width": 1200,
+        "height": 250,
+        "transparent": true,
+        "decorations": false,
+        "url": "subtitle.html"
+      },
+      {
+        "label": "send",
+        "title": "直播字幕小工具 发送窗口",
+        "url": "send.html",
+        "width": 800,
+        "height": 150,
+        "transparent": true,
+        "decorations": false
+      },
+      {
+        "label": "config",
+        "title": "直播字幕小工具 发送窗口",
+        "url": "config.html",
+        "width": 600,
+        "height": 400,
+        "transparent": false
+      }
+    ]
+  }
+}

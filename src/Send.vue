@@ -1,0 +1,70 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import { invoke } from "@tauri-apps/api/tauri";
+import { appWindow } from '@tauri-apps/api/window';
+import { exit } from '@tauri-apps/api/process';
+import { WebviewWindow } from '@tauri-apps/api/window'
+import { postDanmu } from './components/bilibili_api.js';
+import { getRoomid } from "./components/config.js";
+/* 
+为了实现透明窗口，在tauri.conf.json里面要把标题栏去掉
+但是这样窗口就无法移动，与其写div实现一个标题栏再加上移动功能，不如直接加回来
+这样，即使有标题栏，窗口也是透明的了 
+*/
+onMounted(async () => {
+  await appWindow.setDecorations(true);
+});
+
+/* 关掉这个窗口（发送窗口）就退出整个程序 */
+appWindow.onCloseRequested(async () => {
+  await exit(0);
+});
+
+
+const message = ref("");
+const subtitleWindow = WebviewWindow.getByLabel('subtitle');
+async function greet() {
+  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+  let greetMessage = await invoke("greet", { msg: message.value });
+
+  let sendMessage = message.value.trim();
+  // 如果去除空格后为空则不发送消息
+  if (!sendMessage)
+    return;
+
+  subtitleWindow.emit('show_message', { message: sendMessage });
+  const roomid = await getRoomid();
+  await postDanmu(sendMessage, roomid);
+
+  message.value="";
+}
+</script>
+
+<template>
+  <div class="container">
+    <form class="input-container" @submit.prevent="greet">
+      <input id="greet-input" v-model="message" placeholder="请输入你要发送的内容" />
+      <button type="submit">发送</button>
+    </form>
+  </div>
+</template>
+
+<style>
+.container {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+}
+
+.input-container {
+  display: flex;
+  justify-content: center;
+}
+
+#greet-input {
+  margin-right: 5px;
+}
+
+</style>
