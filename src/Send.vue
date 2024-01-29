@@ -23,6 +23,7 @@ appWindow.onCloseRequested(async () => {
 
 const message = ref("");
 const subtitleWindow = WebviewWindow.getByLabel('subtitle');
+const send_danmu = ref(true);
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   let greetMessage = await invoke("greet", { msg: message.value });
@@ -34,18 +35,24 @@ async function greet() {
 
   subtitleWindow.emit('show_message', { message: sendMessage });
   const roomid = await getRoomid();
-  await postDanmu(sendMessage, roomid);
+  if (send_danmu.value) {
+    await postDanmu(sendMessage, roomid);
+  }
 
-  message.value="";
+  message.value = "";
 }
 </script>
 
 <template>
   <div class="container">
-    <form class="input-container" @submit.prevent="greet">
+    <form class="raw-container" @submit.prevent="greet">
       <input id="greet-input" v-model="message" placeholder="请输入你要发送的内容" />
       <button type="submit">发送</button>
     </form>
+    <div class="raw-container">
+      <input type="checkbox" class="checkbox-input" v-model="send_danmu" />
+      <label class="checkbox-label">同时发送到直播间弹幕</label>
+    </div>
   </div>
 </template>
 
@@ -58,13 +65,31 @@ async function greet() {
   text-align: center;
 }
 
-.input-container {
+.raw-container {
   display: flex;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 #greet-input {
   margin-right: 5px;
+}
+
+/* 复选框 */
+.checkbox-input {
+  margin-right: 5px;
+  /* 设置复选框与标签之间的间距 */
+  /* 定义自定义复选框的尺寸和样式 */
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 复选框标签 */
+.checkbox-label {
+  font-size: 16px;
+  color: whitesmoke;
 }
 
 </style>
