@@ -4,16 +4,12 @@
  * This source code is in the public domain; if your jurisdiction does not
  * recognize the public domain the terms of Creative Commons CC0 license
  * apply. In the other words, you can always do what you want.
+ * 
+ * Rumia Edit: The original js file is written as MUD format
+ * I removed the MUD definition and added ES6 module exports.
+ * export const QRCodeGenerator = QRCode;
  */
-(function(root, name, definition) {
-	if (typeof define === 'function' && define.amd) {
-		define([], definition);
-	} else if (typeof module === 'object' && module.exports) {
-		module.exports = definition();
-	} else {
-		root[name] = definition();
-	}
-})(this, 'QRCode', function() {
+
 /* Quick overview: QR code composed of 2D array of modules (a rectangular
  * area that conveys one bit of information); some modules are fixed to help
  * the recognition of the code, and remaining data modules are further divided
@@ -796,5 +792,4 @@ var QRCode = {
 	}
 };
 
-return QRCode;
-});
+export const QRCodeGenerator = QRCode;
