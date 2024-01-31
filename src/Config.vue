@@ -19,18 +19,15 @@ const save = async () => {
 </script>
 <template>
   <div class="settings-container">
-    <div class="room-settings">
-      <label for="room-number">房间号:</label>
+    <div class="settings-row">
+      <label for="room-number">房间号</label>
       <input id="room-number" v-model="roomid" placeholder="请输入房间号" />
     </div>
-    <div class="account-settings">
-      <label>{{ isLoggedIn === null ? '加载中...' : (isLoggedIn ? '已登录' : '未登录') }}</label>
-      <div class="login-logout-buttons">
-        <button @click="login">登录</button>
-        <button @click="logout">登出</button>
-      </div>
+    <div class="settings-row">
+      <button @click="login">登录</button>
+      <button @click="logout">登出</button>
     </div>
-    <div class="save-button">
+    <div class="settings-row">
       <button @click="save">保存</button>
     </div>
   </div>
@@ -38,43 +35,32 @@ const save = async () => {
 
 <style scoped>
 .settings-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
 }
 
-.room-settings,
-.account-settings {
-  margin-bottom: 15px;
-}
-
-.room-settings label,
-.account-settings label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.room-settings input,
-.account-settings input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.login-logout-buttons {
+.settings-row {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  flex-direction: row;
+  justify-content: center;
+  margin: 5px;
 }
 
-.login-logout-buttons button {
-  flex: 1;
-  margin: 0 5px;
-  padding: 8px;
-}
-
-.save-button,
-.save-button button {
+.settings-row button,
+.settings-row input {
   width: 100%;
+  margin: 0 5px;
+}
+.settings-row label {
+  width: 25%;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  text-align: center;
 }
 </style>
