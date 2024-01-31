@@ -1,10 +1,12 @@
 <script setup>
-import { isLogin } from './components/bilibili_api.js';
+import { isLogin, generateLoginQRCode } from './components/bilibili_api.js';
 import { getRoomid, saveConfig } from "./components/config.js";
 import { ref, onMounted } from "vue";
+import { QRCodeGenerator } from "./3rdparty/qr.js";
 
 let isLoggedIn = ref(false);
 let roomid = ref('');
+let qrcode_svg = ref('');
 
 onMounted(async () => {
   isLoggedIn.value = await isLogin();
@@ -16,12 +18,24 @@ const save = async () => {
   await saveConfig(configObj);
 }
 
+const login = async () => {
+  let response = await generateLoginQRCode();
+  if (response) {
+    console.log(response.url);
+    var svg = QRCodeGenerator.generateSVG(response.url);
+    qrcode_svg.value = svg.outerHTML;
+  }
+}
+
 </script>
 <template>
   <div class="settings-container">
     <div class="settings-row">
       <label for="room-number">房间号</label>
       <input id="room-number" v-model="roomid" placeholder="请输入房间号" />
+    </div>
+    <div class="settings-row">
+      <svg v-html="qrcode_svg"></svg>
     </div>
     <div class="settings-row">
       <button @click="login">登录</button>

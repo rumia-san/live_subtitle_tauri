@@ -27,7 +27,8 @@
         "request": true,
         "scope": [
           "https://api.live.bilibili.com/*",
-          "https://api.bilibili.com/*"
+          "https://api.bilibili.com/*",
+          "https://passport.bilibili.com/*"
         ]
       },
       "fs": {
@@ -85,7 +86,7 @@
       },
       {
         "label": "config",
-        "title": "直播字幕小工具 发送窗口",
+        "title": "直播字幕小工具 设置窗口",
         "url": "config.html",
         "width": 600,
         "height": 400,
