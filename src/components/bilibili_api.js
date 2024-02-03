@@ -28,7 +28,6 @@ export async function isLogin() {
       "Origin": ORIGIN,
       "Cookie": cookie,
     },
-    // in this case the server returns a simple string
     responseType: ResponseType.JSON,
   };
   let response = await client.get('https://api.bilibili.com/x/web-interface/nav', requestOptions);
@@ -61,7 +60,6 @@ export async function postDanmu(damnu, roomId) {
       "Origin": ORIGIN,
       "Cookie": cookie,
     },
-    // in this case the server returns a simple string
     responseType: ResponseType.JSON,
   };
   const response = await client.post('https://api.live.bilibili.com/msg/send', requestBody, requestOptions);
@@ -87,14 +85,86 @@ export async function generateLoginQRCode() {
       "User-Agent": USER_AGENT,
       "Origin": ORIGIN,
     },
-    // in this case the server returns a simple string
     responseType: ResponseType.JSON,
   };
-  let response = await client.get('https://passport.bilibili.com/x/passport-login/web/qrcode/generate', requestOptions);
-  if (response.data && response.data.code === 0) {
-    const { url, qrcode_key } = response.data.data;
-    return { url, qrcode_key };
-  } else {
-    return null;
+  const response = await client.get('https://passport.bilibili.com/x/passport-login/web/qrcode/generate', requestOptions);
+  const responseBody = response.data;
+  const { code, data } = responseBody;
+  const { url, qrcode_key } = data;
+  return { code, url, qrcode_key };
+}
+
+function parseSetCookie(setCookieHeader) {
+  if (!setCookieHeader) return '';
+  const cookies = setCookieHeader.split(';');
+  return cookies[0] + ';';
+}
+
+/* 轮询扫码结果
+{
+    "code": 0,
+    "message": "0",
+    "ttl": 1,
+    "data": {
+        "url": "",
+        "refresh_token": "",
+        "timestamp": 0,
+        "code": 86090,
+        "message": "二维码已扫码未确认"
+    }
+}
+0：扫码登录成功
+86038：二维码已失效
+86090：二维码已扫码未确认
+86101：未扫码
+*/
+export async function pollLoginQRCode(qrcode_key) {
+  const client = await getClient();
+  const requestOptions = {
+    headers: {
+      "User-Agent": USER_AGENT,
+      "Origin": ORIGIN,
+    },
+    responseType: ResponseType.JSON,
+    query: {
+      "qrcode_key": qrcode_key,
+    }
+  };
+  const response = await client.get('https://passport.bilibili.com/x/passport-login/web/qrcode/poll', requestOptions);
+  const { rawHeaders, data } = response;
+  const { code, message } = data.data;
+  const setCookieHeaders = rawHeaders['set-cookie'] || [];
+  const cookie = setCookieHeaders.map(parseSetCookie).join(' ');
+  return { code, message, cookie };
+}
+
+/* 登出
+{
+  "code": 0,
+  "status": true,
+  "ts": 1663034005,
+  "data": {
+    "redirectUrl": "https://passport.biligame.com/crossDomain?DedeUserID=&DedeUserID__ckMd5=&SESSDATA=&bili_jct=&gourl=javascript%3Ahistory.go%28-1%29"
   }
+}
+*/
+export async function logout() {
+  const client = await getClient();
+  const cookie = await getCookie();
+  const requestOptions = {
+    headers: {
+      "User-Agent": USER_AGENT,
+      "Origin": ORIGIN,
+      "Cookie": cookie,
+    },
+    // 只能说B站的接口真是逆天设计，未登录状态这个接口居然会返回http页面，这里我不管解析失败的异常了
+    responseType: ResponseType.JSON,
+  };
+  const csrf = await getCsrf();
+  const requestBody = Body.form({
+    biliCSRF: csrf
+  });
+  const response = await client.post('https://passport.bilibili.com/login/exit/v2', requestBody, requestOptions);
+  const { code, status, message } = response.data;
+  return { code, status, message };
 }
