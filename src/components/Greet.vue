@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { listen } from '@tauri-apps/api/event'
 
 const greetMsg = ref("");
 
@@ -30,7 +31,6 @@ async function greet(greetMessage) {
   typewriter.style.animation = '';
 }
 
-import { listen } from '@tauri-apps/api/event'
 // 发送窗口会发送show_message事件，payload就是要发送的字符串
 listen('show_message', async (event) => {
   await greet(event.payload.message);

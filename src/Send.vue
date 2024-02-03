@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
-import { appWindow } from '@tauri-apps/api/window';
+import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
 import { exit } from '@tauri-apps/api/process';
-import { WebviewWindow } from '@tauri-apps/api/window'
 import { postDanmu } from './components/bilibili_api.js';
 import { getRoomid } from "./components/config.js";
+import { listen } from '@tauri-apps/api/event'
 /* 
 为了实现透明窗口，在tauri.conf.json里面要把标题栏去掉
 但是这样窗口就无法移动，与其写div实现一个标题栏再加上移动功能，不如直接加回来
@@ -33,7 +33,7 @@ async function greet() {
   if (!sendMessage)
     return;
 
-  subtitleWindow.emit('show_message', { message: sendMessage });
+  await subtitleWindow.emit('show_message', { message: sendMessage });
   const roomid = await getRoomid();
   if (send_danmu.value) {
     await postDanmu(sendMessage, roomid);
@@ -41,6 +41,11 @@ async function greet() {
 
   message.value = "";
 }
+
+// 如果登录了，我需要刷新页面才能加载新的cookie
+listen('refresh', async (event) => {
+  location.reload();
+});
 </script>
 
 <template>

@@ -4,6 +4,7 @@ import { getRoomid, saveConfig } from "./components/config.js";
 import { saveCookie } from "./components/cookie.js";
 import { ref, onMounted } from "vue";
 import { QRCodeGenerator } from "./3rdparty/qr.js";
+import { WebviewWindow } from '@tauri-apps/api/window'
 
 let show_qrcode = ref(false);
 let isLoggedIn = ref(false);
@@ -24,9 +25,16 @@ onMounted(async () => {
   roomid.value = await getRoomid();
 });
 
+async function refreshSendWindow() {
+  const sendWindow = WebviewWindow.getByLabel('send');
+  await sendWindow.emit('refresh');
+}
+
 const save = async () => {
   const configObj = { roomid: roomid.value };
   await saveConfig(configObj);
+  // 刷新发送窗口以获取新的设置
+  await refreshSendWindow();
 }
 
 const perform_login = async () => {
@@ -51,6 +59,8 @@ const perform_login = async () => {
         // 扫码成功
         await saveCookie(pollResult.cookie);
         await showLoginStatus();
+        // 刷新发送窗口以获取新的cookie
+        await refreshSendWindow();
         break;
       case 86038:
         // 二维码己失效
