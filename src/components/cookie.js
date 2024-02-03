@@ -2,15 +2,8 @@ import { appCacheDir, resolve } from '@tauri-apps/api/path'
 import { readTextFile, writeTextFile, exists } from '@tauri-apps/api/fs'
 import { createDir } from '@tauri-apps/api/fs';
 
-let cachedCookie = '';
-let cachedCsrf = '';
-
-function clearCacheVariables() {
-  cachedCookie = '';
-  cachedCsrf = '';
-}
-
-clearCacheVariables();
+let cachedCookie = null;
+let cachedCsrf = null;
 
 async function getCookiePath() {
   const cacheDir = await appCacheDir();
@@ -18,27 +11,31 @@ async function getCookiePath() {
   return cookiePath;
 }
 
-async function ensureCookiePath() {
-  const cacheDir = await appCacheDir();
-  const cacheDirExist = await exists(cacheDir);
-  if (!cacheDirExist) {
-    await createDir(cacheDir);
-  }
-  const cookiePath = await getCookiePath();
-  const cookieExist = await exists(cookiePath);
-  if (!cookieExist) {
-    await writeTextFile({ path: cookiePath, contents: '' });
-  }
-}
-
 export async function getCookie() {
   if (cachedCookie) {
     return cachedCookie;
   }
-  await ensureCookiePath();
   const cookiePath = await getCookiePath();
+  const cookieExist = await exists(cookiePath);
+  if (!cookieExist) {
+    return "";
+  }
   cachedCookie = await readTextFile(cookiePath);
   return cachedCookie;
+}
+
+export async function saveCookie(cookie) {
+  const cacheDir = await appCacheDir();
+  const cacheDirExist = await exists(cacheDir);
+  if (!cacheDirExist) {
+    console.log('create dir ' + cacheDir);
+    await createDir(cacheDir);
+  }
+  // 使用write through策略
+  cachedCookie = cookie;
+  cachedCsrf = parseCsrf(cookie);
+  const cookiePath = await getCookiePath();
+  await writeTextFile({path: cookiePath, contents: cookie});
 }
 
 export async function getCsrf() {
