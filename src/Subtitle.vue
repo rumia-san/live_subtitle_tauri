@@ -25,12 +25,17 @@ appWindow.onCloseRequested(async () => {
 </script>
 
 <template>
-  <Greet />
+  <div class="all-content">
+    <Greet />
+  </div>
 </template>
 
 <style scoped>
-
-body {
-  background-color: black;
+.all-content {
+  width: 100vw;
+  height: 100vh;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 </style>

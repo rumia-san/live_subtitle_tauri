@@ -50,12 +50,11 @@ listen('show_message', async (event) => {
 <style>
 
 .container {
-  margin: 10px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   text-align: center;
-  height: 90%;
+  height: 100%;
   width: 100%;
 }
 
@@ -84,8 +83,6 @@ listen('show_message', async (event) => {
   /* 其他可选样式，如文字颜色、内边距等 */
   color: #000000;
   /* 文字颜色为黑色 */
-  padding: 10px;
-  /* 内部填充为10像素 */
   border-radius: 5px;
   /* 圆角效果 */
 

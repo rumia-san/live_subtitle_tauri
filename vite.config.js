@@ -10,6 +10,7 @@ export default defineConfig(async () => ({
       input: {
         main: resolve(__dirname, 'subtitle.html'),
         send_window: resolve(__dirname, 'send.html'),
+        config_window: resolve(__dirname, 'config.html'),
       },
     },
   },
