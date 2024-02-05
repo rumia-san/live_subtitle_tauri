@@ -28,7 +28,6 @@ export async function saveCookie(cookie) {
   const cacheDir = await appCacheDir();
   const cacheDirExist = await exists(cacheDir);
   if (!cacheDirExist) {
-    console.log('create dir ' + cacheDir);
     await createDir(cacheDir);
   }
   // 使用write through策略

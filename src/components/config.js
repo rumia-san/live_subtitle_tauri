@@ -31,7 +31,6 @@ export async function saveConfig(configObj) {
   const configDir = await appConfigDir();
   const configDirExist = await exists(configDir);
   if (!configDirExist) {
-    console.log('create dir ' + configDir);
     await createDir(configDir);
   }
   const configJSON = JSON.stringify(configObj, null, 2);

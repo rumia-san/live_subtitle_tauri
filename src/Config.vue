@@ -53,7 +53,6 @@ const perform_login = async () => {
   }
   loginPollTimer = setInterval(async () => {
     let pollResult = await pollLoginQRCode(response.qrcode_key);
-    console.log(pollResult);
     switch (pollResult.code) {
       case 0:
         // 扫码成功
