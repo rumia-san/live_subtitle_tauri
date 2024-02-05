@@ -37,7 +37,6 @@ export async function isLogin() {
 
 //发送弹幕
 export async function postDanmu(damnu, roomId) {
-  console.log('开始发送弹幕，内容为 ' + damnu);
   const cookie = await getCookie();
   const csrf = await getCsrf();
   const client = await getClient();
@@ -63,8 +62,8 @@ export async function postDanmu(damnu, roomId) {
     responseType: ResponseType.JSON,
   };
   const response = await client.post('https://api.live.bilibili.com/msg/send', requestBody, requestOptions);
-  console.log(response.status);
-  console.log(response.data);
+  const { code, message } = response.data;
+  return { code, message };
 }
 
 /* 生成登录二维码，返回示例

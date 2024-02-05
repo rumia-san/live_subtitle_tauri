@@ -6,6 +6,8 @@ import { exit } from '@tauri-apps/api/process';
 import { postDanmu } from './components/bilibili_api.js';
 import { getRoomid } from "./components/config.js";
 import { listen } from '@tauri-apps/api/event'
+import Toast from "./components/Toast.vue";
+
 /* 
 为了实现透明窗口，在tauri.conf.json里面要把标题栏去掉
 但是这样窗口就无法移动，与其写div实现一个标题栏再加上移动功能，不如直接加回来
@@ -20,7 +22,9 @@ appWindow.onCloseRequested(async () => {
   await exit(0);
 });
 
+const WARNING_BG_COLOR = "#ffc107";
 
+const toast_ref = ref(null);
 const message = ref("");
 const subtitleWindow = WebviewWindow.getByLabel('subtitle');
 const send_danmu = ref(true);
@@ -36,7 +40,10 @@ async function greet() {
   await subtitleWindow.emit('show_message', { message: sendMessage });
   const roomid = await getRoomid();
   if (send_danmu.value) {
-    await postDanmu(sendMessage, roomid);
+    const { code, message } = await postDanmu(sendMessage, roomid);
+    if (code != 0) {
+      toast_ref.value.showToast('发送弹幕失败：' + message, 'black', WARNING_BG_COLOR);
+    }
   }
 
   message.value = "";
@@ -49,6 +56,7 @@ listen('refresh', async (event) => {
 </script>
 
 <template>
+  <Toast ref="toast_ref" />
   <div class="container">
     <form class="raw-container" @submit.prevent="greet">
       <input id="greet-input" v-model="message" placeholder="请输入你要发送的内容" />
@@ -96,5 +104,4 @@ listen('refresh', async (event) => {
   font-size: 16px;
   color: whitesmoke;
 }
-
 </style>
