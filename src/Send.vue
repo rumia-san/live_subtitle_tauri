@@ -27,7 +27,7 @@ const WARNING_BG_COLOR = "#ffc107";
 const toast_ref = ref(null);
 const message = ref("");
 const subtitleWindow = WebviewWindow.getByLabel('subtitle');
-const send_danmu = ref(true);
+const send_danmu = ref(false);
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
   let greetMessage = await invoke("greet", { msg: message.value });

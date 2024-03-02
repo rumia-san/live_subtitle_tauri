@@ -1,8 +1,19 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { listen } from '@tauri-apps/api/event'
+import { getBgColor, getFgColor } from "./config.js";
 
 const greetMsg = ref("");
+
+const fgColor = ref("");
+const bgColor = ref("");
+
+onMounted(async () => {
+  const fg = await getFgColor();
+  fgColor.value = fg ? fg : '#ffffff';
+  const bg = await getBgColor();
+  bgColor.value = bg ? bg : '#ffffff4d';
+});
 
 let fadeTimeoutID = null;
 const fadeTimeoutInMs = 5000;
@@ -39,7 +50,7 @@ listen('show_message', async (event) => {
 
 <template>
   <div class="container">
-    <div id="greet-message-container" class="message-container">
+    <div id="greet-message-container" class="message-container" :style="{ 'border-color': fgColor, 'background-color': bgColor }">
       <div id="animated-typewriter" class="typewriter">
         <p class="text">{{ greetMsg }}</p>
       </div>
@@ -74,12 +85,8 @@ listen('show_message', async (event) => {
 
 .message-container {
   flex-grow: 1;
-  /* 背景色：半透明的白色 */
-  background-color: rgba(255, 255, 255, 0.3);
-  /* rgba(红, 绿, 蓝, 透明度) */
-  /* 边框：白色 */
-  border: 10px solid rgb(255, 255, 255);
-  /* 设置边框为1像素宽，实线，白色 */
+  border: 10px solid;
+  /* 设置边框为1像素宽，实线 */
   /* 其他可选样式，如文字颜色、内边距等 */
   color: #000000;
   /* 文字颜色为黑色 */

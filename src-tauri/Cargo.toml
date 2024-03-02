@@ -1,7 +1,7 @@
 [package]
 name = "live_subtitle_tauri"
 version = "0.0.1"
-description = "A Tauri App"
+description = "Display the dialog during live broadcast"
 authors = ["rumia-san"]
 license = ""
 repository = ""
