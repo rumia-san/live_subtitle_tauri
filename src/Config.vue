@@ -1,6 +1,6 @@
 <script setup>
 import { isLogin, generateLoginQRCode, pollLoginQRCode, logout } from './components/bilibili_api.js';
-import { getRoomid, saveConfig } from "./components/config.js";
+import { getRoomid, saveConfig, getFgColor, getBgColor, getWindowColor } from "./components/config.js";
 import { saveCookie } from "./components/cookie.js";
 import { ref, onMounted } from "vue";
 import { QRCodeGenerator } from "./3rdparty/qr.js";
@@ -11,6 +11,9 @@ let isLoggedIn = ref(false);
 let roomid = ref('');
 let qrcode_svg = ref('');
 let loginPollTimer = null;
+let container_fg_color = ref('');
+let container_bg_color = ref('');
+let window_bg_color = ref('');
 
 async function showLoginStatus() {
   show_qrcode.value = false;
@@ -23,15 +26,25 @@ async function showLoginStatus() {
 onMounted(async () => {
   await showLoginStatus();
   roomid.value = await getRoomid();
+  container_fg_color.value = await getFgColor();
+  container_bg_color.value = await getBgColor();
+  window_bg_color.value = await getWindowColor();
 });
 
 async function refreshSendWindow() {
   const sendWindow = WebviewWindow.getByLabel('send');
   await sendWindow.emit('refresh');
+  const subtitleWindow = WebviewWindow.getByLabel('subtitle');
+  await subtitleWindow.emit('refresh');
 }
 
 const save = async () => {
-  const configObj = { roomid: roomid.value };
+  const configObj = { 
+    roomid: roomid.value,
+    container_fg_color: container_fg_color.value,
+    container_bg_color: container_bg_color.value,
+    window_bg_color: window_bg_color.value,
+  };
   await saveConfig(configObj);
   // 刷新发送窗口以获取新的设置
   await refreshSendWindow();
@@ -80,6 +93,11 @@ const perform_logout = async () => {
   }
 }
 
+const show_color_settings = () => {
+  let container = document.getElementById('expand-container-color');
+  container.classList.toggle('show');
+}
+
 </script>
 <template>
   <div class="settings-container">
@@ -99,6 +117,23 @@ const perform_logout = async () => {
     <div class="settings-row">
       <button @click="perform_login">扫码登录</button>
       <button @click="perform_logout">登出</button>
+    </div>
+    <div class="settings-row">
+      <button @click="show_color_settings">颜色设置</button>
+    </div>
+    <div id="expand-container-color" class="expand-container">
+      <div class="settings-row">
+        <label for="container-fg-color">边框颜色</label>
+        <input id="container-fg-color" v-model="container_fg_color" placeholder="字幕框前景色，默认为#ffffff" />
+      </div>
+      <div class="settings-row">
+        <label for="container-bg-color">边框背景</label>
+        <input id="container-bg-color" v-model="container_bg_color" placeholder="字幕框背景色，默认为#ffffff4d" />
+      </div>
+      <div class="settings-row">
+        <label for="container-bg-color">窗口背景</label>
+        <input id="container-bg-color" v-model="window_bg_color" placeholder="字幕窗口背景色，默认为#0000001a" />
+      </div>
     </div>
     <div class="settings-row">
       <button @click="save">保存</button>
@@ -136,5 +171,15 @@ const perform_logout = async () => {
   align-items: center;
   font-size: 1em;
   text-align: center;
+}
+
+.expand-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.expand-container.show {
+  max-height: 10em;
 }
 </style>
