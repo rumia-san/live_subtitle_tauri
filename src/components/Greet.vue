@@ -1,18 +1,25 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { listen } from '@tauri-apps/api/event'
-import { getBgColor, getFgColor } from "./config.js";
+import {
+  getBgColor,
+  getFgColor,
+  getFontColor,
+} from "./config.js";
 
 const greetMsg = ref("");
 
 const fgColor = ref("");
 const bgColor = ref("");
+const fontColor = ref('');
 
 onMounted(async () => {
   const fg = await getFgColor();
   fgColor.value = fg ? fg : '#ffffff';
   const bg = await getBgColor();
   bgColor.value = bg ? bg : '#ffffff4d';
+  const fc = await getFontColor();
+  fontColor.value = fc ? fc : '#ffffff';
 });
 
 let fadeTimeoutID = null;
@@ -52,7 +59,7 @@ listen('show_message', async (event) => {
   <div class="container">
     <div id="greet-message-container" class="message-container" :style="{ 'border-color': fgColor, 'background-color': bgColor }">
       <div id="animated-typewriter" class="typewriter">
-        <p class="text">{{ greetMsg }}</p>
+        <p class="text" :style="{ 'color': fontColor }">{{ greetMsg }}</p>
       </div>
     </div>
   </div>
@@ -76,7 +83,6 @@ listen('show_message', async (event) => {
 
 .text {
   font-family: 'Microsoft Yahei', 'Source Han Serif SC', sans-serif; /* 无衬线字体 */
-  color: white; /* 字体颜色为白色 */
   font-size: 36px;
   font-weight: bold;
   line-height: 1.5;
@@ -87,9 +93,6 @@ listen('show_message', async (event) => {
   flex-grow: 1;
   border: 10px solid;
   /* 设置边框为1像素宽，实线 */
-  /* 其他可选样式，如文字颜色、内边距等 */
-  color: #000000;
-  /* 文字颜色为黑色 */
   border-radius: 5px;
   /* 圆角效果 */
 

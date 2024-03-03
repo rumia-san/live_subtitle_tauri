@@ -33,30 +33,29 @@ export async function saveConfig(configObj) {
   await writeTextFile({ path: configPath, contents: configJSON });
 }
 
-export async function getRoomid() {
-  if (cachedConfig.roomid)
-    return cachedConfig.roomid;
+export async function getConfig(configName) {
+  if (cachedConfig[configName])
+    return cachedConfig[configName];
   const config = await loadConfig();
-  return config.roomid;
+  return config[configName];
+}
+
+export async function getRoomid() {
+  return getConfig('roomid');
 }
 
 export async function getFgColor() {
-  if (cachedConfig.container_fg_color)
-    return cachedConfig.container_fg_color;
-  const config = await loadConfig();
-  return config.container_fg_color;
+  return getConfig('container_fg_color');
 }
 
 export async function getBgColor() {
-  if (cachedConfig.container_fg_color)
-    return cachedConfig.container_bg_color;
-  const config = await loadConfig();
-  return config.container_bg_color;
+  return getConfig('container_bg_color');
 }
 
 export async function getWindowColor() {
-  if (cachedConfig.window_bg_color)
-    return cachedConfig.window_bg_color;
-  const config = await loadConfig();
-  return config.window_bg_color;
+  return getConfig('window_bg_color');
+}
+
+export async function getFontColor() {
+  return getConfig('font_color');
 }

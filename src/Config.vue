@@ -1,6 +1,13 @@
 <script setup>
 import { isLogin, generateLoginQRCode, pollLoginQRCode, logout } from './components/bilibili_api.js';
-import { getRoomid, saveConfig, getFgColor, getBgColor, getWindowColor } from "./components/config.js";
+import {
+  getRoomid,
+  saveConfig,
+  getFgColor,
+  getBgColor,
+  getWindowColor,
+  getFontColor,
+} from "./components/config.js";
 import { saveCookie } from "./components/cookie.js";
 import { ref, onMounted } from "vue";
 import { QRCodeGenerator } from "./3rdparty/qr.js";
@@ -14,6 +21,7 @@ let loginPollTimer = null;
 let container_fg_color = ref('');
 let container_bg_color = ref('');
 let window_bg_color = ref('');
+let font_color = ref('');
 
 async function showLoginStatus() {
   show_qrcode.value = false;
@@ -29,6 +37,7 @@ onMounted(async () => {
   container_fg_color.value = await getFgColor();
   container_bg_color.value = await getBgColor();
   window_bg_color.value = await getWindowColor();
+  font_color.value = await getFontColor();
 });
 
 async function refreshSendWindow() {
@@ -44,6 +53,7 @@ const save = async () => {
     container_fg_color: container_fg_color.value,
     container_bg_color: container_bg_color.value,
     window_bg_color: window_bg_color.value,
+    font_color: font_color.value,
   };
   await saveConfig(configObj);
   // 刷新发送窗口以获取新的设置
@@ -119,9 +129,13 @@ const show_color_settings = () => {
       <button @click="perform_logout">登出</button>
     </div>
     <div class="settings-row">
-      <button @click="show_color_settings">颜色设置</button>
+      <button @click="show_color_settings">样式设置</button>
     </div>
     <div id="expand-container-color" class="expand-container">
+      <div class="settings-row">
+        <label for="font-color">字体颜色</label>
+        <input id="font-color" v-model="font_color" placeholder="字幕框字体颜色，默认为#ffffff" />
+      </div>
       <div class="settings-row">
         <label for="container-fg-color">边框颜色</label>
         <input id="container-fg-color" v-model="container_fg_color" placeholder="字幕框前景色，默认为#ffffff" />
@@ -131,8 +145,8 @@ const show_color_settings = () => {
         <input id="container-bg-color" v-model="container_bg_color" placeholder="字幕框背景色，默认为#ffffff4d" />
       </div>
       <div class="settings-row">
-        <label for="container-bg-color">窗口背景</label>
-        <input id="container-bg-color" v-model="window_bg_color" placeholder="字幕窗口背景色，默认为#0000001a" />
+        <label for="window-bg-color">窗口背景</label>
+        <input id="window-bg-color" v-model="window_bg_color" placeholder="字幕窗口背景色，默认为#0000001a" />
       </div>
     </div>
     <div class="settings-row">
@@ -180,6 +194,6 @@ const show_color_settings = () => {
 }
 
 .expand-container.show {
-  max-height: 10em;
+  max-height: 12em;
 }
 </style>
