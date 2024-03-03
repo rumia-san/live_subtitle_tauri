@@ -59,3 +59,7 @@ export async function getWindowColor() {
 export async function getFontColor() {
   return getConfig('font_color');
 }
+
+export async function getTextStroke() {
+  return getConfig('text_stroke');
+}

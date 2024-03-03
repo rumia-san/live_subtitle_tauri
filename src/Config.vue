@@ -7,6 +7,7 @@ import {
   getBgColor,
   getWindowColor,
   getFontColor,
+  getTextStroke,
 } from "./components/config.js";
 import { saveCookie } from "./components/cookie.js";
 import { ref, onMounted } from "vue";
@@ -22,6 +23,7 @@ let container_fg_color = ref('');
 let container_bg_color = ref('');
 let window_bg_color = ref('');
 let font_color = ref('');
+let text_stroke = ref('');
 
 async function showLoginStatus() {
   show_qrcode.value = false;
@@ -38,6 +40,7 @@ onMounted(async () => {
   container_bg_color.value = await getBgColor();
   window_bg_color.value = await getWindowColor();
   font_color.value = await getFontColor();
+  text_stroke.value = await getTextStroke();
 });
 
 async function refreshSendWindow() {
@@ -54,6 +57,7 @@ const save = async () => {
     container_bg_color: container_bg_color.value,
     window_bg_color: window_bg_color.value,
     font_color: font_color.value,
+    text_stroke: text_stroke.value,
   };
   await saveConfig(configObj);
   // 刷新发送窗口以获取新的设置
@@ -134,11 +138,15 @@ const show_color_settings = () => {
     <div id="expand-container-color" class="expand-container">
       <div class="settings-row">
         <label for="font-color">字体颜色</label>
-        <input id="font-color" v-model="font_color" placeholder="字幕框字体颜色，默认为#ffffff" />
+        <input id="font-color" v-model="font_color" placeholder="字体颜色，默认为#ffffff" />
+      </div>
+      <div class="settings-row">
+        <label for="text-stroke">描边样式</label>
+        <input id="text-stroker" v-model="text_stroke" placeholder="字体描边样式，默认为 1px #000000" />
       </div>
       <div class="settings-row">
         <label for="container-fg-color">边框颜色</label>
-        <input id="container-fg-color" v-model="container_fg_color" placeholder="字幕框前景色，默认为#ffffff" />
+        <input id="container-fg-color" v-model="container_fg_color" placeholder="字幕框边框色，默认为#ffffff" />
       </div>
       <div class="settings-row">
         <label for="container-bg-color">边框背景</label>
@@ -194,6 +202,6 @@ const show_color_settings = () => {
 }
 
 .expand-container.show {
-  max-height: 12em;
+  max-height: 15em;
 }
 </style>

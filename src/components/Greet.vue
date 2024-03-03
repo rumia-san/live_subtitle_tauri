@@ -5,6 +5,7 @@ import {
   getBgColor,
   getFgColor,
   getFontColor,
+  getTextStroke,
 } from "./config.js";
 
 const greetMsg = ref("");
@@ -12,6 +13,7 @@ const greetMsg = ref("");
 const fgColor = ref("");
 const bgColor = ref("");
 const fontColor = ref('');
+const textStroke = ref('');
 
 onMounted(async () => {
   const fg = await getFgColor();
@@ -20,6 +22,8 @@ onMounted(async () => {
   bgColor.value = bg ? bg : '#ffffff4d';
   const fc = await getFontColor();
   fontColor.value = fc ? fc : '#ffffff';
+  const ts = await getTextStroke();
+  textStroke.value = ts ? ts : '1px #000000';
 });
 
 let fadeTimeoutID = null;
@@ -59,7 +63,7 @@ listen('show_message', async (event) => {
   <div class="container">
     <div id="greet-message-container" class="message-container" :style="{ 'border-color': fgColor, 'background-color': bgColor }">
       <div id="animated-typewriter" class="typewriter">
-        <p class="text" :style="{ 'color': fontColor }">{{ greetMsg }}</p>
+        <p class="text" :style="{ 'color': fontColor, '-webkit-text-stroke': textStroke }">{{ greetMsg }}</p>
       </div>
     </div>
   </div>
